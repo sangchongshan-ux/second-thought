@@ -4,7 +4,7 @@ A practice environment for problems you cannot ask ChatGPT to solve. Three probl
 
 ![Contract screen](docs/screenshots/01-contract.png)
 
-**README prose word count: 468** (code blocks, setup commands and file lists are excluded).
+**README prose word count: 841** (paragraphs and bullets only; headings, code blocks and image lines are excluded).
 
 ## What it is
 
@@ -23,6 +23,8 @@ The design decision that matters is that help is a ladder, not an answer. Level 
 ## Technology stack
 
 Plain HTML, CSS and JavaScript. No framework, no build step, no dependencies, no network calls. Session state lives in `localStorage`; the export is a client-side Blob download. This was a deliberate choice: the assignment asks for a walkthrough a reader can follow, and a single page that opens from a folder is easier to inspect than a stack that needs installing.
+
+No AI model runs inside the product. The hint selector is a rule set, so the same session reproduces the same choices offline and nothing is sent anywhere. The choice still undecided is whether a model should rewrite the hint text at a level the rules have already chosen — the level decision would stay with the rules, because the level is what the study measures. The AI tools used to build and document the project, and what each contributed, are listed under AI assistance below.
 
 ## Run it
 
@@ -57,6 +59,12 @@ docs/storyboard-1..3.svg   three interaction walkthroughs
 docs/screenshots/          captures used in the report
 tools/                     scripts used to capture screenshots and render diagrams
 ```
+
+## Additional files
+
+The report is in this repository at `docs/A2_Project_Report_3129594.docx`. Open it in Word, or use the PDF of the same file in the submission ZIP.
+
+`A2_3129594.zip` contains the report (`.docx` and `.pdf`) and a copy of this repository. Nothing in it is unavailable here — it is there so the report can be read without cloning. The figures it embeds are the same files under `docs/` and `docs/screenshots/`.
 
 ## Data and privacy
 

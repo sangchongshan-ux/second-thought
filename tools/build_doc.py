@@ -122,6 +122,18 @@ def main():
 
     idx = md(closing, idx, fid)
 
+    # reference lists are set tight: drop the inter-entry gap so the list closes on
+    # the same page instead of stranding one line on a page of its own
+    for ref in refs:
+        out, _ = call('doc_find', file_id=fid, text=ref[:18])
+        m = re.search(r'"begin"\s*:\s*(\d+)\s*,\s*"end"\s*:\s*(\d+)', out)
+        if m:
+            call('doc_modify_paragraph', file_id=fid,
+                 ranges=[{'begin': int(m.group(1)), 'end': int(m.group(2))}],
+                 spacing_after=0)
+        else:
+            print('WARN reference not found:', ref[:30])
+
     # appendix: the built interface. Start it on a fresh page via the heading's own
     # "page break before" — an inserted break character would leave a blank page behind.
     idx = md("## Appendix: the interface as built\n", idx, fid)

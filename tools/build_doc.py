@@ -66,8 +66,10 @@ def main():
     header = (
         "# Second Thought: measuring help-seeking instead of asking about it\n\n"
         "**Assignment 2 — Project Report**\n\n"
-        "Intelligent Interactive Systems · Student 3129594\n\n"
-        f"Total word count: **{COUNTS['total']:,}** (abstract {COUNTS['abstract']}, main report {COUNTS['main']:,})\n\n"
+        "桑崇善 · Student 3129594\n\n"
+        "Intelligent Interactive Systems · 11 November 2026\n\n"
+        f"Total word count: **{COUNTS['total']:,}** — abstract {COUNTS['abstract']}, main report {COUNTS['main']:,}. "
+        "The table, the figure captions and the reference list are not included in this count.\n\n"
         "Repository: github.com/" + GH_USER + "/second-thought\n\n"
         "## Abstract\n\n"
         + R.ABSTRACT + "\n"
@@ -120,14 +122,21 @@ def main():
 
     idx = md(closing, idx, fid)
 
-    # appendix: the built interface (new page, so the two captures never split)
-    out, pos = call('doc_insert_page_break', file_id=fid, idx=idx)
-    if pos is not None:
-        idx = pos
+    # appendix: the built interface. Start it on a fresh page via the heading's own
+    # "page break before" — an inserted break character would leave a blank page behind.
     idx = md("## Appendix: the interface as built\n", idx, fid)
-    idx = img(os.path.join(ROOT, 'docs', 'screenshots', '04-hint.png'), idx, fid, 520, 366)
+    out, _ = call('doc_find', file_id=fid, text='Appendix: the interface as built')
+    m = re.search(r'"begin"\s*:\s*(\d+)\s*,\s*"end"\s*:\s*(\d+)', out)
+    if m:
+        out2, _ = call('doc_modify_paragraph', file_id=fid,
+                       ranges=[{'begin': int(m.group(1)), 'end': int(m.group(2))}],
+                       page_break_before=True)
+        print('page break before:', out2[:120])
+    else:
+        print('WARN heading range not found:', out[:200])
+    idx = img(os.path.join(ROOT, 'docs', 'screenshots', '04-hint.png'), idx, fid, 496, 349)
     idx = md("*Figure 5. The hint ladder as built. Level 2 was chosen because the answer matched the item’s lure, and the interface states that reason.*\n", idx, fid)
-    idx = img(os.path.join(ROOT, 'docs', 'screenshots', '06-summary.png'), idx, fid, 520, 366)
+    idx = img(os.path.join(ROOT, 'docs', 'screenshots', '06-summary.png'), idx, fid, 496, 349)
     idx = md("*Figure 6. The summary as built: counts first, then the limits statement, then the data controls.*\n", idx, fid)
 
     out, _ = call('save_file', file_id=fid, file_path=OUT)

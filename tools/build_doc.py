@@ -14,6 +14,15 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 OUT = os.path.join(ROOT, 'docs', 'A2_Project_Report_3129594.docx')
 
 COUNTS = R.counts()
+GH_USER = os.environ.get('GH_USER', 'USERNAME')
+try:
+    GH_COMMIT = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=ROOT).decode().strip()
+except Exception:
+    GH_COMMIT = 'COMMIT_HASH'
+
+
+def sub(text):
+    return text.replace('USERNAME', GH_USER).replace('COMMIT_HASH', GH_COMMIT)
 
 
 def call(tool, **kwargs):
@@ -37,7 +46,16 @@ def img(path, idx, fid, w, h):
     out, pos = call('doc_insert_image', file_id=fid, idx=idx, image_path=path, w=w, h=h)
     if pos is None:
         print('WARN no position from image insert:', out[:300])
-    return pos if pos is not None else idx
+        return idx
+    # close the image's own paragraph, otherwise the caption becomes a run on the
+    # same line as the picture and flows to its right when the image is narrow
+    out2, p2 = call('doc_insert_paragraph', file_id=fid, idx=pos, level=0, type=0)
+    if p2 is None:
+        print('WARN no position from paragraph break:', out2[:300])
+        return pos
+    # p2 points at the break itself, which still belongs to the image paragraph;
+    # step past the paragraph mark so the caption lands in the new empty paragraph
+    return p2 + 1
 
 
 def main():
@@ -50,7 +68,7 @@ def main():
         "**Assignment 2 — Project Report**\n\n"
         "Intelligent Interactive Systems · Student 3129594\n\n"
         f"Total word count: **{COUNTS['total']:,}** (abstract {COUNTS['abstract']}, main report {COUNTS['main']:,})\n\n"
-        "Repository: github.com/USERNAME/second-thought\n\n"
+        "Repository: github.com/" + GH_USER + "/second-thought\n\n"
         "## Abstract\n\n"
         + R.ABSTRACT + "\n"
     )
@@ -88,7 +106,7 @@ def main():
 
     closing = ""
     for heading, paras in R.CLOSING:
-        closing += "## " + heading + "\n\n" + "\n\n".join(paras) + "\n\n"
+        closing += "## " + heading + "\n\n" + "\n\n".join(sub(p) for p in paras) + "\n\n"
 
     closing += "## References\n\n"
     refs = [
@@ -102,11 +120,14 @@ def main():
 
     idx = md(closing, idx, fid)
 
-    # appendix: the built interface
+    # appendix: the built interface (new page, so the two captures never split)
+    out, pos = call('doc_insert_page_break', file_id=fid, idx=idx)
+    if pos is not None:
+        idx = pos
     idx = md("## Appendix: the interface as built\n", idx, fid)
-    idx = img(os.path.join(ROOT, 'docs', 'screenshots', '04-hint.png'), idx, fid, 560, 394)
+    idx = img(os.path.join(ROOT, 'docs', 'screenshots', '04-hint.png'), idx, fid, 520, 366)
     idx = md("*Figure 5. The hint ladder as built. Level 2 was chosen because the answer matched the item’s lure, and the interface states that reason.*\n", idx, fid)
-    idx = img(os.path.join(ROOT, 'docs', 'screenshots', '06-summary.png'), idx, fid, 560, 394)
+    idx = img(os.path.join(ROOT, 'docs', 'screenshots', '06-summary.png'), idx, fid, 520, 366)
     idx = md("*Figure 6. The summary as built: counts first, then the limits statement, then the data controls.*\n", idx, fid)
 
     out, _ = call('save_file', file_id=fid, file_path=OUT)

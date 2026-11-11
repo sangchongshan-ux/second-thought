@@ -37,7 +37,7 @@ TABLE = [
 
 CLOSING = [
     ("5. Repository and development evidence", [
-        """The repository is at github.com/USERNAME/second-thought and the submitted commit is COMMIT_HASH. The README carries the project status (implemented, simulated, planned), the stack, the two commands needed to run it, a development record naming the two faults found while walking the interaction, and the AI-assistance statement. The rule set and the hint text are the parts a reader should check against the screenshots: they are short, and they determine what the learner actually sees."""
+        """The repository is at github.com/USERNAME/second-thought and the prototype commit is COMMIT_HASH. The README carries the project status (implemented, simulated, planned), the stack, the two commands needed to run it, a development record naming the two faults found while walking the interaction, and the AI-assistance statement. The rule set and the hint text are the parts a reader should check against the screenshots: they are short, and they determine what the learner actually sees."""
     ]),
     ("6. AI assistance", [
         """Claude (WorkBuddy) drafted the CSS, the hint text and a first README. I set the interaction model, chose the items, wrote the limits statement and checked each output by running the page. The hint-escalation bug and the reflection-timing change came out of that checking. The argument, the guideline mapping and the claims about what the summary can support are mine."""

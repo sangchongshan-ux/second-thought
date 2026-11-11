@@ -4,7 +4,7 @@ A practice environment for problems you cannot ask ChatGPT to solve. Three probl
 
 ![Contract screen](docs/screenshots/01-contract.png)
 
-**README prose word count: 841** (paragraphs and bullets only; headings, code blocks and image lines are excluded).
+**README prose word count: 885** (paragraphs and bullets only; headings, code blocks and image lines are excluded).
 
 ## What it is
 
@@ -42,6 +42,8 @@ Any static server works. Opening `index.html` directly also runs, but `localStor
 - **Hint escalation bug.** During the storyboard walkthrough, "I need more than this" re-showed level 2 instead of moving to level 3, because the selector recomputed the same rule. Fixed by making the deeper action bypass the rule and take `deepest + 1`. This is the kind of fault that only appears when you walk the interaction rather than the code.
 - **Reflection timing.** The prompt was originally on a five-minute timer. It now opens when a problem is submitted. A timer interrupts mid-reasoning and changes the behaviour being measured — the same point the Week 7 guideline review made about timing services on context rather than on a clock.
 - **Summary wording.** The first limits sentence ran two clauses together without a full stop. Corrected after reading the rendered page rather than the source.
+
+All four changes were made while walking the prototype, before the repository existed, so they share the first commit (`dbc7bf2`) instead of having one each. Commits after it (`8dc6ad6` onwards) fix the report build: figure and caption separation, appendix pagination, and the word-count statement.
 
 ## AI assistance
 

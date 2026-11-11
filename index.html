@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Second Thought — practice without the answer machine</title>
+<meta name="description" content="A practice environment for problems you cannot ask ChatGPT to solve.">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="assets/tasks.js" defer></script>
+<script src="assets/app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="mark" aria-hidden="true">ST</span>
+    <span class="brand-text"><strong>Second Thought</strong><span class="sub">practice without the answer machine</span></span>
+  </div>
+  <div class="topbar-right">
+    <span id="record-pill" class="pill pill-quiet" role="status">Not started</span>
+    <button id="about-btn" class="ghost" type="button">About this prototype</button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ───────────────────────── Contract ───────────────────────── -->
+  <section id="view-contract" class="view" aria-labelledby="contract-title">
+    <p class="eyebrow">Before you start</p>
+    <h1 id="contract-title">Three problems you cannot look up</h1>
+    <p class="lede">
+      Each problem has an answer that looks obvious and is wrong. You can ask for help, but the help
+      never hands you the answer — it gives you the next step and lets you finish the reasoning.
+    </p>
+
+    <div class="two-col">
+      <div class="card">
+        <h2>How this works</h2>
+        <ul class="plain">
+          <li>You answer, and you are told whether you were right — not what the right answer is.</li>
+          <li>If you are stuck you can ask for a hint. Hints come in three levels and you choose when to go deeper.</li>
+          <li>A short reflection appears after you submit, never while you are still working.</li>
+          <li>At the end you get a summary of how you used help, with its limits stated.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>What is recorded</h2>
+        <p class="small">
+          Attempts, the hint levels you request, time on each problem and your reflection lines.
+          Nothing else — no keystrokes, no pointer path, no page outside this one.
+        </p>
+        <label class="switch">
+          <input type="checkbox" id="logging-toggle" checked>
+          <span>Record this session on this device</span>
+        </label>
+        <p class="small muted" id="logging-note">
+          Recorded in this browser only. You can export or delete it from the summary screen.
+          If you turn this off, the summary is still computed but nothing is stored after you close the tab.
+        </p>
+      </div>
+    </div>
+
+    <button id="start-btn" class="primary" type="button">Start session</button>
+    <p class="small muted">No account, no network requests, no model API. Everything runs in this page.</p>
+  </section>
+
+  <!-- ───────────────────────── Task ───────────────────────── -->
+  <section id="view-task" class="view" hidden aria-labelledby="problem-heading">
+    <div class="task-head">
+      <span id="progress" class="pill pill-quiet">Problem 1 of 3</span>
+      <span id="timer" class="mono small muted" aria-live="off">0:00</span>
+    </div>
+
+    <article class="card problem">
+      <h2 id="problem-heading" class="problem-text"></h2>
+      <form id="answer-form" class="answer-row" autocomplete="off">
+        <label for="answer" class="sr-only">Your answer</label>
+        <div class="field">
+          <span class="unit" id="unit" aria-hidden="true">£</span>
+          <input id="answer" name="answer" inputmode="decimal" placeholder="Your answer" required>
+        </div>
+        <button class="primary" type="submit">Check answer</button>
+      </form>
+
+      <div id="feedback" class="feedback" role="status" aria-live="polite" hidden></div>
+
+      <div class="hint-area">
+        <button id="stuck-btn" class="ghost" type="button">I'm stuck — show me the next step</button>
+        <div id="hint-box" class="hint" hidden>
+          <p class="hint-meta"><span id="hint-level" class="badge"></span> <span id="hint-why" class="small muted"></span></p>
+          <p id="hint-text"></p>
+          <div class="hint-actions">
+            <button id="deeper-btn" class="ghost small-btn" type="button">I need more than this</button>
+            <button id="hide-hint-btn" class="ghost small-btn" type="button">Hide hint</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="reflect" class="reflect" hidden>
+        <label for="reflect-input">Before you move on: what made this one easier or harder than it looked?</label>
+        <textarea id="reflect-input" rows="2" maxlength="400"></textarea>
+        <div class="reflect-actions">
+          <button id="reflect-save" class="primary small-btn" type="button">Save and continue</button>
+          <button id="reflect-skip" class="ghost small-btn" type="button">Skip</button>
+        </div>
+      </div>
+    </article>
+
+    <ol id="dots" class="dots" aria-label="Progress through the set"></ol>
+
+    <div class="ladder-note">
+      <h3>The hint ladder</h3>
+      <p class="small">
+        <span class="badge">1 · Restate</span> points back at what the question is asking.
+        <span class="badge">2 · Strategy</span> names the relationship to set up.
+        <span class="badge">3 · Worked step</span> does one step with you — it still does not give the answer.
+      </p>
+      <p class="small muted">Answer checking runs in this page. Nothing is sent anywhere.</p>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── Summary ───────────────────────── -->
+  <section id="view-summary" class="view" hidden aria-labelledby="summary-title">
+    <p class="eyebrow">Session complete</p>
+    <h1 id="summary-title">How you used help today</h1>
+
+    <div class="metrics" id="metrics"></div>
+
+    <div class="card profile">
+      <h2 id="profile-label">—</h2>
+      <p id="profile-line" class="lede small"></p>
+      <div class="limits">
+        <h3>What this cannot tell you</h3>
+        <p id="profile-limits"></p>
+      </div>
+    </div>
+
+    <details class="card" id="detail-card">
+      <summary>Per-problem detail</summary>
+      <table class="detail-table">
+        <thead><tr><th>Problem</th><th>Attempts</th><th>Deepest hint</th><th>Time</th><th>Outcome</th></tr></thead>
+        <tbody id="detail-body"></tbody>
+      </table>
+    </details>
+
+    <div class="card">
+      <h2>Your data</h2>
+      <p class="small">
+        The session record is held in this browser. Exporting gives you a JSON file you can hand in;
+        deleting removes it from this device and cannot be undone.
+      </p>
+      <div class="row-actions">
+        <button id="export-btn" class="ghost" type="button">Export session JSON</button>
+        <button id="delete-btn" class="danger" type="button">Delete this session</button>
+        <button id="restart-btn" class="primary" type="button">Start a new set</button>
+      </div>
+      <p id="data-status" class="small muted" role="status"></p>
+    </div>
+  </section>
+</main>
+
+<!-- ───────────────────────── About / status legend ───────────────────────── -->
+<dialog id="about" aria-labelledby="about-title">
+  <h2 id="about-title">What is real in this prototype</h2>
+  <p class="small">
+    The report distinguishes implemented, simulated and planned work. This panel is the same
+    distinction, in the product itself.
+  </p>
+  <dl class="status-list">
+    <dt><span class="badge badge-impl">Implemented</span></dt>
+    <dd>Problem set, answer checking, three-level hint ladder, lure detection, boundary-timed reflection,
+      session summary with uncertainty statement, local logging, export and delete.</dd>
+    <dt><span class="badge badge-sim">Simulated</span></dt>
+    <dd>The hint selector is a rule set (attempt count, time on task, whether the answer matched the
+      item's lure). There is no language model behind it, so hint wording is authored per problem
+      rather than generated.</dd>
+    <dt><span class="badge badge-plan">Planned</span></dt>
+    <dd>Model-generated hints, a tutor dashboard, and a delayed retest that would let the summary say
+      something about retention rather than about one sitting.</dd>
+  </dl>
+  <form method="dialog"><button class="primary" type="submit">Close</button></form>
+</dialog>
+
+<footer class="foot">
+  <span>Second Thought · IIS Assignment 2 prototype</span>
+  <span class="muted">No data leaves this device.</span>
+</footer>
+</body>
+</html>

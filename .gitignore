@@ -1,0 +1,7 @@
+.chromeprofile/
+docs/preview.pdf
+docs/page*.png
+docs/*.png
+!docs/screenshots/*.png
+!docs/system-diagram.png
+!docs/storyboard-*.png

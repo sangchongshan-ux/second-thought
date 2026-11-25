@@ -37,10 +37,7 @@ TABLE = [
 
 CLOSING = [
     ("5. Repository and development evidence", [
-        """The repository is at github.com/USERNAME/second-thought and the prototype commit is COMMIT_HASH. The stack is plain HTML, CSS and JavaScript: no framework, build step or network call, and state in localStorage. The README carries the project status (implemented, simulated, planned), a development record naming the changes made while walking the interaction, and the AI-assistance statement. The rule set and hint text are what to check against the screenshots."""
-    ]),
-    ("6. AI assistance", [
-        """Claude (WorkBuddy) drafted the CSS, hint text and a first README. I set the interaction model, chose the items, wrote the limits statement and checked each output by running the page. The hint-escalation bug and the reflection-timing change came out of that checking, not out of the generated code. The argument, the guideline mapping and the limits claim are mine."""
+        """The repository is at github.com/USERNAME/second-thought and the prototype commit is COMMIT_HASH. The stack is plain HTML, CSS and JavaScript: no framework, build step or network call, and state in localStorage. The README carries the project status (implemented, simulated, planned), a development record naming the changes made while walking the interaction, and the AI-assistance statement required by the brief. The rule set and hint text are what to check against the screenshots."""
     ])
 ]
 

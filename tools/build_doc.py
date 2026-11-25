@@ -72,8 +72,8 @@ def main():
         "**Assignment 2 — Project Report**\n\n"
         "桑崇善 · Student 3129594\n\n"
         f"Intelligent Interactive Systems · {datetime.date.today():%d %B %Y}\n\n"
-        f"Word count: **{COUNTS['total']:,}** (abstract {COUNTS['abstract']}, main {COUNTS['main']:,}, table included; "
-        "captions and references excluded). Full text in Word is under 1,400.\n\n"
+        f"Word count: **{COUNTS['total']:,}** (abstract {COUNTS['abstract']}, main {COUNTS['main']:,}, table included). "
+        "Captions and references are excluded, as the brief specifies.\n\n"
         "Repository: github.com/" + GH_USER + "/second-thought\n\n"
         "## Abstract\n\n"
         + R.ABSTRACT + "\n"
@@ -160,7 +160,7 @@ def main():
     # the SDK inserts plain paragraphs, so set the property explicitly.
     for h in ('1. The problem', '2. Design rationale', '3. System diagram',
               '4. Storyboards', '5. Repository and development evidence',
-              '6. AI assistance', 'References',
+              'References',
               'Three walkthroughs: a lure answer'):
         out, _ = call('doc_find', file_id=fid, text=h)
         m = re.search(r'"begin"\s*:\s*(\d+)\s*,\s*"end"\s*:\s*(\d+)', out)
@@ -171,6 +171,18 @@ def main():
                        ranges=[{'begin': int(m.group(1)), 'end': int(m.group(2))}],
                        keep_with_next=True)
         print('keep_with_next', h, ':', 'ok' if '"message"' in out2 else out2[:120])
+
+    # A single reference entry must not break across two pages.
+    for ref in ('Amershi, S.', 'Deng, R.', 'Lo, C.K.', 'Stojanov, A.', 'Zhai, C.'):
+        out, _ = call('doc_find', file_id=fid, text=ref)
+        m = re.search(r'"begin"\s*:\s*(\d+)\s*,\s*"end"\s*:\s*(\d+)', out)
+        if not m:
+            print('WARN reference not found:', ref)
+            continue
+        out2, _ = call('doc_modify_paragraph', file_id=fid,
+                       ranges=[{'begin': int(m.group(1)), 'end': int(m.group(2))}],
+                       keep_together=True)
+        print('keep_together', ref, ':', 'ok' if '"message"' in out2 else out2[:120])
 
     out, _ = call('save_file', file_id=fid, file_path=OUT)
     print('saved:', out[:200])

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Builds the A2 report DOCX through the local editor SDK."""
+import datetime
 import json
 import os
 import re
@@ -15,8 +16,11 @@ OUT = os.path.join(ROOT, 'docs', 'A2_Project_Report_3129594.docx')
 
 COUNTS = R.counts()
 GH_USER = os.environ.get('GH_USER', 'USERNAME')
+# Cite the root commit, not HEAD: HEAD changes every time the report is rebuilt,
+# so the submitted DOCX would cite a commit whose copy of itself is out of date.
 try:
-    GH_COMMIT = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=ROOT).decode().strip()
+    GH_COMMIT = os.environ.get('GH_COMMIT') or subprocess.check_output(
+        ['git', 'rev-list', '--max-parents=0', 'HEAD'], cwd=ROOT).decode().strip()[:7]
 except Exception:
     GH_COMMIT = 'COMMIT_HASH'
 
@@ -67,7 +71,7 @@ def main():
         "# Second Thought: measuring help-seeking instead of asking about it\n\n"
         "**Assignment 2 — Project Report**\n\n"
         "桑崇善 · Student 3129594\n\n"
-        "Intelligent Interactive Systems · 11 November 2026\n\n"
+        f"Intelligent Interactive Systems · {datetime.date.today():%d %B %Y}\n\n"
         f"Total word count: **{COUNTS['total']:,}** (abstract {COUNTS['abstract']}, main report {COUNTS['main']:,}, "
         "including the rationale table). Figure captions and the reference list are excluded.\n\n"
         "Repository: github.com/" + GH_USER + "/second-thought\n\n"
@@ -96,7 +100,7 @@ def main():
                 print('WARN table id not found:', out[:200])
         if heading.startswith("3."):
             idx = img(os.path.join(ROOT, 'docs', 'system-diagram.png'), idx, fid, 600, 400)
-            idx = md("*Figure 1. System diagram: implemented components in solid outline, the rule-based selector in amber, planned work dashed. Arrows read left to right, then down.*\n", idx, fid)
+            idx = md("*Figure 1. System diagram: implemented components in solid outline, the simulated rule-based selector in amber, planned work dashed. Arrows read left to right, then down.*\n", idx, fid)
         if heading.startswith("4."):
             for n, (f, cap) in enumerate([
                 ('storyboard-1.png', 'Figure 2. Storyboard 1 — a wrong intuitive answer, one hint request, then the reflection prompt at the boundary.'),
@@ -150,6 +154,23 @@ def main():
     idx = md("*Figure 5. The hint ladder as built. Level 2 was chosen because the answer matched the item’s lure, and the interface states that reason.*\n", idx, fid)
     idx = img(os.path.join(ROOT, 'docs', 'screenshots', '06-summary.png'), idx, fid, 496, 349)
     idx = md("*Figure 6. The summary as built: counts first, then the limits statement, then the data controls.*\n", idx, fid)
+
+    # A section heading must not sit alone at the foot of a page while its
+    # figure starts the next one. Word's own heading styles keep with next;
+    # the SDK inserts plain paragraphs, so set the property explicitly.
+    for h in ('1. The problem', '2. Design rationale', '3. System diagram',
+              '4. Storyboards', '5. Repository and development evidence',
+              '6. AI assistance', 'References',
+              'Three walkthroughs: a wrong intuitive answer'):
+        out, _ = call('doc_find', file_id=fid, text=h)
+        m = re.search(r'"begin"\s*:\s*(\d+)\s*,\s*"end"\s*:\s*(\d+)', out)
+        if not m:
+            print('WARN heading not found:', h)
+            continue
+        out2, _ = call('doc_modify_paragraph', file_id=fid,
+                       ranges=[{'begin': int(m.group(1)), 'end': int(m.group(2))}],
+                       keep_with_next=True)
+        print('keep_with_next', h, ':', 'ok' if '"message"' in out2 else out2[:120])
 
     out, _ = call('save_file', file_id=fid, file_path=OUT)
     print('saved:', out[:200])

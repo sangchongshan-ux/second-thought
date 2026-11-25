@@ -18,7 +18,7 @@ SECTIONS = [
         """Two things were cut. Free-text justifications were to be scored by a keyword matcher; it rewarded phrasing rather than reasoning, so justifications are stored but not judged. The scope is one sitting of three items: enough to show the interaction, not enough to claim anything about a person."""
     ]),
     ("3. System diagram", [
-        """The diagram separates what the interface offers from the rules that decide it. The dashed branch points at the selector: model-generated hints would change the wording inside a rung, not the ladder."""
+        """The diagram separates what the interface offers from the rules that decide it. There is no backend to draw: the page is the system, state sits in localStorage, and no request leaves the device, so the record stays on the learner's machine. The dashed branch points at the selector: model-generated hints would change the wording inside a rung, not the ladder."""
     ]),
     ("4. Storyboards", [
         """Three walkthroughs: a wrong intuitive answer, a request for the answer, and the end of the session."""
@@ -37,7 +37,7 @@ TABLE = [
 
 CLOSING = [
     ("5. Repository and development evidence", [
-        """The repository is at github.com/USERNAME/second-thought and the prototype commit is COMMIT_HASH. The stack is plain HTML, CSS and JavaScript: no framework, build step or network call, and state in localStorage. The README carries the project status (implemented, simulated, planned), a development record naming the two faults found while walking the interaction, and the AI-assistance statement. The rule set and the hint text are what a reader should check against the screenshots."""
+        """The repository is at github.com/USERNAME/second-thought and the prototype commit is COMMIT_HASH. The stack is plain HTML, CSS and JavaScript: no framework, build step or network call, and state in localStorage. The README carries the project status (implemented, simulated, planned), a development record naming the changes made while walking the interaction, and the AI-assistance statement. The rule set and the hint text are what a reader should check against the screenshots."""
     ]),
     ("6. AI assistance", [
         """Claude (WorkBuddy) drafted the CSS, the hint text and a first README. I set the interaction model, chose the items, wrote the limits statement and checked each output by running the page. The hint-escalation bug and the reflection-timing change came out of that checking. The argument, the guideline mapping and the limits claim are mine."""

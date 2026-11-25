@@ -14,7 +14,7 @@ The design decision that matters is that help is a ladder, not an answer. Level 
 
 ## Project status
 
-**Works.** The full loop runs in one page: contract screen with a logging toggle, three problems with answer checking, the hint ladder, a reflection prompt after each problem, a summary with a limits statement, per-problem detail, JSON export and delete.
+**Implemented.** The full loop runs in one page: contract screen with a logging toggle, three problems with answer checking, the hint ladder, a reflection prompt after each problem, a summary with a limits statement, per-problem detail, JSON export and delete.
 
 **Simulated.** The hint selector is a rule set — attempt count, time on task, and whether the answer matched the item's lure. It is not a language model. Hint text is authored per problem, so the "adaptation" is the choice of level and the reason shown to the learner ("because your answer matched the trap this problem is built around"), not generated prose.
 

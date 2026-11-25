@@ -72,8 +72,8 @@ def main():
         "**Assignment 2 — Project Report**\n\n"
         "桑崇善 · Student 3129594\n\n"
         f"Intelligent Interactive Systems · {datetime.date.today():%d %B %Y}\n\n"
-        f"Total word count: **{COUNTS['total']:,}** (abstract {COUNTS['abstract']}, main report {COUNTS['main']:,}, "
-        "including the rationale table). Figure captions and the reference list are excluded.\n\n"
+        f"Word count: **{COUNTS['total']:,}** (abstract {COUNTS['abstract']}, main {COUNTS['main']:,}, table included; "
+        "captions and references excluded). Full text in Word is under 1,400.\n\n"
         "Repository: github.com/" + GH_USER + "/second-thought\n\n"
         "## Abstract\n\n"
         + R.ABSTRACT + "\n"
@@ -100,12 +100,12 @@ def main():
                 print('WARN table id not found:', out[:200])
         if heading.startswith("3."):
             idx = img(os.path.join(ROOT, 'docs', 'system-diagram.png'), idx, fid, 600, 400)
-            idx = md("*Figure 1. System diagram: implemented components in solid outline, the simulated rule-based selector in amber, planned work dashed. Arrows read left to right, then down.*\n", idx, fid)
+            idx = md("*" + R.CAPTIONS[0] + "*\n", idx, fid)
         if heading.startswith("4."):
             for n, (f, cap) in enumerate([
-                ('storyboard-1.png', 'Figure 2. Storyboard 1 — a wrong intuitive answer, one hint request, then the reflection prompt at the boundary.'),
-                ('storyboard-2.png', 'Figure 3. Storyboard 2 — a request for the answer is refused; level 3 does one step and stops.'),
-                ('storyboard-3.png', 'Figure 4. Storyboard 3 — the summary states its own limits, and the record can be exported or deleted.'),
+                ('storyboard-1.png', R.CAPTIONS[1]),
+                ('storyboard-2.png', R.CAPTIONS[2]),
+                ('storyboard-3.png', R.CAPTIONS[3]),
             ], start=2):
                 idx = img(os.path.join(ROOT, 'docs', f), idx, fid, 600, 294)
                 idx = md(f"*{cap}*\n", idx, fid)
@@ -151,9 +151,9 @@ def main():
     else:
         print('WARN heading range not found:', out[:200])
     idx = img(os.path.join(ROOT, 'docs', 'screenshots', '04-hint.png'), idx, fid, 496, 349)
-    idx = md("*Figure 5. The hint ladder as built. Level 2 was chosen because the answer matched the item’s lure, and the interface states that reason.*\n", idx, fid)
+    idx = md("*" + R.CAPTIONS[4] + "*\n", idx, fid)
     idx = img(os.path.join(ROOT, 'docs', 'screenshots', '06-summary.png'), idx, fid, 496, 349)
-    idx = md("*Figure 6. The summary as built: counts first, then the limits statement, then the data controls.*\n", idx, fid)
+    idx = md("*" + R.CAPTIONS[5] + "*\n", idx, fid)
 
     # A section heading must not sit alone at the foot of a page while its
     # figure starts the next one. Word's own heading styles keep with next;
@@ -161,7 +161,7 @@ def main():
     for h in ('1. The problem', '2. Design rationale', '3. System diagram',
               '4. Storyboards', '5. Repository and development evidence',
               '6. AI assistance', 'References',
-              'Three walkthroughs: a wrong intuitive answer'):
+              'Three walkthroughs: a lure answer'):
         out, _ = call('doc_find', file_id=fid, text=h)
         m = re.search(r'"begin"\s*:\s*(\d+)\s*,\s*"end"\s*:\s*(\d+)', out)
         if not m:

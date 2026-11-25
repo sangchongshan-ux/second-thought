@@ -16,6 +16,11 @@ OUT = os.path.join(ROOT, 'docs', 'A2_Project_Report_3129594.docx')
 
 COUNTS = R.counts()
 GH_USER = os.environ.get('GH_USER', 'USERNAME')
+# Word splits URLs, hyphenated compounds and decimals differently from a
+# whitespace count, so the figure printed on the cover is the one Word itself
+# reports. Measure with tools/wordcount.ps1, then pass it in here.
+WORD_BODY = os.environ.get('WORD_BODY')
+WORD_ABSTRACT = os.environ.get('WORD_ABSTRACT')
 # Cite the root commit, not HEAD: HEAD changes every time the report is rebuilt,
 # so the submitted DOCX would cite a commit whose copy of itself is out of date.
 try:
@@ -67,12 +72,20 @@ def main():
     fid = re.search(r'file_id=([\w\-]+)', out).group(1)
     print('doc', fid)
 
+    if WORD_BODY and WORD_ABSTRACT:
+        wc_body, wc_abs = int(WORD_BODY), int(WORD_ABSTRACT)
+        wc_total = wc_body + wc_abs
+        print('word count from Word:', wc_abs, '+', wc_body, '=', wc_total)
+    else:
+        wc_body, wc_abs, wc_total = COUNTS['main'], COUNTS['abstract'], COUNTS['total']
+        print('word count from script (run tools/wordcount.ps1 to replace with Word figures)')
+
     header = (
         "# Second Thought: measuring help-seeking instead of asking about it\n\n"
         "**Assignment 2 — Project Report**\n\n"
         "桑崇善 · Student 3129594\n\n"
         f"Intelligent Interactive Systems · {datetime.date.today():%d %B %Y}\n\n"
-        f"Word count: **{COUNTS['total']:,}** (abstract {COUNTS['abstract']}, main {COUNTS['main']:,}, table included). "
+        f"Word count: **{wc_total:,}** (abstract {wc_abs}, main report {wc_body:,}, table included). "
         "Captions and references are excluded, as the brief specifies.\n\n"
         "Repository: github.com/" + GH_USER + "/second-thought\n\n"
         "## Abstract\n\n"
